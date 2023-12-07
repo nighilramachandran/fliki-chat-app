@@ -111,7 +111,7 @@ export const CustomForm: React.FC<props> = (props) => {
             }
             if (input.validate?.same) {
               if (data[input.name] !== data[input.validate.same]) {
-                errors[input.name] = `${fieldName} ${"does_not_match"}`;
+                errors[input.name] = `${fieldName} ${"does not match"}`;
               }
             }
             if (input.validate?.difference) {
@@ -197,7 +197,7 @@ export const CustomForm: React.FC<props> = (props) => {
           <LoadingButton
             variant="outlined"
             type="submit"
-            disabled={!formik.isValid}
+            // disabled={!formik.isValid}
             loading={status === "loading"}
             sx={{ width: "100%" }}
           >

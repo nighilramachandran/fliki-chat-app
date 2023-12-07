@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { CustomForm, CustomInputFormProps } from "../components/form";
 import { Button, Grid, Paper, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../utils/routes/constants";
+import { enqueueSnackbar } from "notistack";
+import axios from "axios";
+import { loginRoutes } from "../utils/APIRoutes";
 
 const inputs: CustomInputFormProps[] = [
   {
@@ -23,17 +26,35 @@ const inputs: CustomInputFormProps[] = [
   },
 ];
 
-const handleSignIn = () => {
-  // console.log(values);
-};
-
 const { AUTH } = ROUTES;
 
 const SignIn = () => {
+  //navigate
   const navigate = useNavigate();
 
+  //states
+  const [load, setLoad] = useState<boolean>(false);
+
+  //functions
   const handleSignUp = () => {
     navigate(AUTH.REGISTER);
+  };
+
+  const handleSignIn = async (vals: any) => {
+    setLoad((prev) => !prev);
+    try {
+      const { data } = await axios.post(loginRoutes, vals);
+      if (data.status) {
+        localStorage.setItem("chat-app-user", JSON.stringify(data.user));
+        // navigate(AUTH.ROOT);
+      } else if (!data.status) {
+        enqueueSnackbar(data.msg, {
+          variant: "error",
+        });
+      }
+    } catch (error: any) {
+      console.error("Error:", error.message);
+    }
   };
 
   return (
@@ -44,8 +65,9 @@ const SignIn = () => {
             <CustomForm
               formName="form"
               inputs={inputs}
-              onSubmit={(vals) => console.log(vals)}
+              onSubmit={handleSignIn}
               submitLable={"login"}
+              status={load ? "loading" : "nothing"}
             ></CustomForm>
             <Stack
               direction={"row"}

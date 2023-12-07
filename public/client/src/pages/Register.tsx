@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { CustomForm, CustomInputFormProps } from "../components/form";
 import { Button, Grid, Paper, Stack, Typography } from "@mui/material";
 import axios from "axios";
@@ -43,11 +43,18 @@ const inputs: CustomInputFormProps[] = [
 ];
 
 const Register = () => {
+  //navigate
   const navigate = useNavigate();
 
+  //states
+  const [load, setLoad] = useState<boolean>(false);
+
+  //routes
   const { AUTH } = ROUTES;
 
+  //functions
   const handleRegister = async (vals: any) => {
+    setLoad((prev) => !prev);
     try {
       const { data } = await axios.post(regiserRoutes, vals);
       if (data.status) {
@@ -79,7 +86,8 @@ const Register = () => {
               formName="form"
               inputs={inputs}
               onSubmit={handleRegister}
-              submitLable={"login"}
+              submitLable={"Register"}
+              status={load ? "loading" : "nothing"}
             ></CustomForm>
             <Stack
               direction={"row"}

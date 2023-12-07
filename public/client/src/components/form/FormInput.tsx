@@ -43,8 +43,6 @@ export const FormInput: React.FC<props> = ({
     isFormFieldValid(name) ? formik.errors[name] : "";
   const notValidNum = ["E", "e", "-", "=", "+"];
 
-  const [passwordStrength, setPasswordStrength] = useState<string>("");
-
   //constants
   const handleShowPassword = () => {
     setCurrentType(currentType === "text" ? "password" : "text");
@@ -65,14 +63,6 @@ export const FormInput: React.FC<props> = ({
     }
   };
 
-  // check the password strength
-  const getPasswordStrengthLabel = (isTooShort: any, score: any) => {
-    if (isTooShort) return "Password not long enough";
-    if (score >= 4) return "strong";
-    if (score === 3) return "average";
-    return "weak";
-  };
-
   const handleLocalOnChange: React.ChangeEventHandler<
     HTMLInputElement | HTMLTextAreaElement
   > = (e) => {
@@ -84,17 +74,6 @@ export const FormInput: React.FC<props> = ({
     ) {
       return;
     }
-
-    // if (name === "password") {
-    //   const { score } = zxcvbn(value);
-    //   // setPasswordStrength(getPasswordStrengthLabel(formik.values.password.length < MIN_PASSWORD_LENGTH, score) ?? "")
-    //   setPasswordStrength(
-    //     getPasswordStrengthLabel(
-    //       (value.length as any) < MIN_PASSWORD_LENGTH,
-    //       score
-    //     ) ?? ""
-    //   );
-    // }
 
     if (initType === "email" || initType === "text") {
       formik.setFieldValue(name, value.trim());
@@ -122,7 +101,7 @@ export const FormInput: React.FC<props> = ({
 
   //label component
   const getLabel = () => {
-    if (initType === "password" && name === "password") {
+    if (initType === "password") {
       return (
         <Stack>
           <Stack
@@ -145,51 +124,9 @@ export const FormInput: React.FC<props> = ({
           </Stack>
         </Stack>
       );
-    } else if (initType === "password" && name === "confirmPassword") {
-      const errors = formik.errors.confirmPassword;
-      const confirmLength = formik.values.confirmPassword.length;
-      return (
-        <Stack>
-          <Stack direction={"row"} justifyContent={"space-between"}>
-            <StyledLabel>{label}</StyledLabel>
-          </Stack>
-        </Stack>
-      );
     } else {
       return <StyledLabel>{label}</StyledLabel>;
     }
-  };
-
-  const getPasswordValidationLabel = () => {
-    return (
-      <>
-        {name === "password" &&
-          formik.values.password !== "" &&
-          Object.keys(formik.errors).length !== 0 && (
-            <Typography textAlign={"left"} fontWeight={300}>
-              {passwordStrength === "Password not long enough" ? (
-                `${passwordStrength}`
-              ) : (
-                <>
-                  Password strength :{" "}
-                  <Typography
-                    color={
-                      passwordStrength === "weak"
-                        ? "text.danger"
-                        : passwordStrength === "strong"
-                        ? "text.strong"
-                        : "text.average"
-                    }
-                    fontWeight={300}
-                  >
-                    {passwordStrength}
-                  </Typography>
-                </>
-              )}
-            </Typography>
-          )}
-      </>
-    );
   };
 
   //error message component
@@ -267,7 +204,6 @@ export const FormInput: React.FC<props> = ({
           },
         }}
       />
-      {name === "password" && getPasswordValidationLabel()}
     </Stack>
   );
 
