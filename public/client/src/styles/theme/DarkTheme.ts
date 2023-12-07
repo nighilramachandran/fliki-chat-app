@@ -1,7 +1,7 @@
 import { ThemeOptions } from "@mui/material/styles";
-import { typographyStylesOverrides } from "./overrides/components/TypographyFontStyle.ts";
-import { componetnsOverrides } from "./overrides/components/index.ts";
-import { typographyOverride } from "./overrides/components/Typography.ts";
+import { typographyStylesOverrides } from "./overrides/components/TypographyFontStyle";
+import { componetnsOverrides } from "./overrides/components/index";
+import { typographyOverride } from "./overrides/components/Typography";
 
 const DarkTheme: ThemeOptions = {
   palette: {
