@@ -1,12 +1,18 @@
 import React from "react";
+
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-
+import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
+import darkTheme from "./styles/theme/DarkTheme.ts";
 const root = ReactDOM.createRoot(document.getElementById("root"));
+const darkThem = createTheme(darkTheme);
 root.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme={darkThem}>
+      <CssBaseline enableColorScheme />
+      <App />
+    </ThemeProvider>
   </React.StrictMode>
 );
 
