@@ -9,21 +9,21 @@ import { ROUTES } from "../utils/routes/constants";
 
 const inputs: CustomInputFormProps[] = [
   {
-    type: "text",
-    name: "username",
-    label: "User Name",
-    placeholder: "User Name",
-    validate: { required: true },
-    colProps: { xs: 12 },
-  },
-  {
-    type: "text",
+    type: "email",
     name: "email",
     label: "Email",
     placeholder: "Email",
     validate: { required: true },
     colProps: { xs: 12 },
   },
+  // {
+  //   type: "text",
+  //   name: "username",
+  //   label: "User Name",
+  //   placeholder: "User Name",
+  //   validate: { required: true },
+  //   colProps: { xs: 12 },
+  // },
   {
     type: "password",
     name: "loginPassword",

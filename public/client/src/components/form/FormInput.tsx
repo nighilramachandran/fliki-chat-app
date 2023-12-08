@@ -50,8 +50,8 @@ export const FormInput: React.FC<props> = ({
 
   const handleLocalOnkeyDown = (e: any) => {
     if (
-      notValidNum.includes(e.key) &&
-      (initType === "number" || initType === "integer")
+      (notValidNum.includes(e.key) && initType === "number") ||
+      initType === "integer"
     ) {
       e.preventDefault();
     }
@@ -75,10 +75,10 @@ export const FormInput: React.FC<props> = ({
       return;
     }
 
-    if (initType === "email" || initType === "text") {
-      formik.setFieldValue(name, value.trim());
-      return;
-    }
+    // if (initType === "email" || initType === "text") {
+    //   formik.setFieldValue(name, value.trim());
+    //   return;
+    // }
     formik.handleChange(e);
   };
 
@@ -154,7 +154,7 @@ export const FormInput: React.FC<props> = ({
         key={name}
         name={name}
         type={currentType}
-        onKeyDown={handleLocalOnkeyDown}
+        // onKeyDown={handleLocalOnkeyDown}
         onPaste={initType === "number" ? (e) => e.preventDefault() : undefined}
         onChange={handleLocalOnChange}
         {...restInputProps}

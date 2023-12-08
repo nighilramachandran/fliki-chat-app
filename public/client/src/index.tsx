@@ -1,14 +1,16 @@
 import React from "react";
-
 import ReactDOM from "react-dom/client";
-
-import reportWebVitals from "./reportWebVitals.js";
-import { PrivateRoutes } from "./Routes";
-import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
-import darkTheme from "./styles/theme/DarkTheme.ts";
+import reportWebVitals from "./reportWebVitals";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import DarkTheme from "./styles/theme/DarkTheme";
 import { SnackbarProvider } from "notistack";
-const root = ReactDOM.createRoot(document.getElementById("root"));
-const darkThem = createTheme(darkTheme);
+import { PrivateRoutes } from "./Routes";
+
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
+
+const darkThem = createTheme(DarkTheme);
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={darkThem}>
