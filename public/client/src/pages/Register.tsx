@@ -6,6 +6,8 @@ import { regiserRoutes } from "../utils/APIRoutes";
 import { enqueueSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../utils/routes/constants";
+import { useAppDispatch } from "../redux/hooks";
+import { RegisterAsync } from "../redux/reducers/auth";
 
 const inputs: CustomInputFormProps[] = [
   {
@@ -16,14 +18,6 @@ const inputs: CustomInputFormProps[] = [
     validate: { required: true },
     colProps: { xs: 12 },
   },
-  // {
-  //   type: "text",
-  //   name: "username",
-  //   label: "User Name",
-  //   placeholder: "User Name",
-  //   validate: { required: true },
-  //   colProps: { xs: 12 },
-  // },
   {
     type: "password",
     name: "loginPassword",
@@ -46,31 +40,15 @@ const Register = () => {
   //navigate
   const navigate = useNavigate();
 
-  //states
-  const [load, setLoad] = useState<boolean>(false);
+  //dispatcher
+  const dispatch = useAppDispatch();
 
   //routes
   const { ROOT } = ROUTES;
 
   //functions
   const handleRegister = async (vals: any) => {
-    setLoad((prev) => !prev);
-    try {
-      const { data } = await axios.post(regiserRoutes, vals);
-      if (data.status) {
-        enqueueSnackbar(data.msg, {
-          variant: "success",
-        });
-        // localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        navigate(ROOT);
-      } else {
-        enqueueSnackbar(data.msg, {
-          variant: "error",
-        });
-      }
-    } catch (error: any) {
-      console.error("Error:", error.message);
-    }
+    dispatch(RegisterAsync(vals, navigate));
   };
 
   const handleSignIn = () => {
@@ -87,7 +65,7 @@ const Register = () => {
               inputs={inputs}
               onSubmit={handleRegister}
               submitLable={"Register"}
-              status={load ? "loading" : "nothing"}
+              // status={load ? "loading" : "nothing"}
             ></CustomForm>
             <Stack
               direction={"row"}

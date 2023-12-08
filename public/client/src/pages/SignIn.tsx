@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { CustomForm, CustomInputFormProps } from "../components/form";
 import { Button, Grid, Paper, Stack, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 import { ROUTES } from "../utils/routes/constants";
 import { enqueueSnackbar } from "notistack";
 import axios from "axios";
 import { loginRoutes } from "../utils/APIRoutes";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { RootState } from "../redux/store";
+import { LoginAsync } from "../redux/reducers/auth";
+import { LoginReq } from "../interfaces/Auth";
 
 const inputs: CustomInputFormProps[] = [
   {
@@ -32,33 +36,19 @@ const SignIn = () => {
   //navigate
   const navigate = useNavigate();
 
-  //states
-  const [load, setLoad] = useState<boolean>(false);
+  //dispatcher
+  const dispatch = useAppDispatch();
+
+  //selectors
+  const { status } = useAppSelector((state: RootState) => state.Auth);
 
   //functions
   const handleSignUp = () => {
     navigate(GUEST.REGISTER);
   };
 
-  const handleSignIn = async (vals: any) => {
-    setLoad((prev) => !prev);
-    try {
-      const { data } = await axios.post(loginRoutes, vals);
-
-      if (data.status) {
-        localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        navigate(AUTH.CHAT_GROUP);
-      } else if (!data.status) {
-        navigate(ROOT);
-        enqueueSnackbar(data.msg, {
-          variant: "error",
-        });
-      }
-    } catch (error: any) {
-      setLoad((prev) => !prev);
-      console.error("Error:", error.message);
-    }
-    setLoad((prev) => !prev);
+  const handleSignIn = async (vals: LoginReq) => {
+    dispatch(LoginAsync(vals, navigate));
   };
 
   return (
@@ -71,7 +61,7 @@ const SignIn = () => {
               inputs={inputs}
               onSubmit={handleSignIn}
               submitLable={"login"}
-              status={load ? "loading" : "nothing"}
+              status={status === "loading" ? "loading" : "nothing"}
             ></CustomForm>
             <Stack
               direction={"row"}

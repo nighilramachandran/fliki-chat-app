@@ -19,7 +19,7 @@ export const Header: React.FC = () => {
     const user = localStorage.getItem("chat-app-user");
     if (user) {
       const char = JSON.parse(localStorage.getItem("chat-app-user") ?? "");
-      setAvatarName(char.username);
+      setAvatarName(char.email);
     }
   }, []);
 

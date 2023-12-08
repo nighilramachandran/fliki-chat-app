@@ -5,12 +5,12 @@ const bycrypt = require("bcrypt");
 
 module.exports.register = async (req, res, next) => {
   try {
-    const { email, username, loginPassword } = req.body;
+    const { email, loginPassword } = req.body;
 
-    const usernameCheck = await User.findOne({ username });
-    if (usernameCheck) {
-      return res.json({ msg: "User Name Already exist", status: false });
-    }
+    // const usernameCheck = await User.findOne({ username });
+    // if (usernameCheck) {
+    //   return res.json({ msg: "User Name Already exist", status: false });
+    // }
     const emailCheck = await User.findOne({ email });
     if (emailCheck) {
       return res.json({ msg: "Email Already exist", status: false });
@@ -18,7 +18,6 @@ module.exports.register = async (req, res, next) => {
     const hashedPassword = await bycrypt.hash(loginPassword, 10);
     const user = await User.create({
       email,
-      username,
       userPassword: hashedPassword,
     });
     delete user.loginPassword;

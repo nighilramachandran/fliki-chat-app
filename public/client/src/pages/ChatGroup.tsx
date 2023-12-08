@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../utils/routes/constants";
-import { Button, Grid, Paper, Stack, Typography } from "@mui/material";
+import { Button, Chip, Grid, Paper, Stack, Typography } from "@mui/material";
 import axios from "axios";
 import { getAllGroupRoutes } from "../utils/APIRoutes";
 
@@ -57,10 +57,14 @@ const ChatGroup = () => {
       <Grid container alignItems={"start"} spacing={2}>
         <Grid item xs={4}>
           <Paper sx={{ height: "80vh" }}>
-            {allGroups?.length !== 0 &&
-              allGroups?.map((el, index) => {
-                return <Typography key={index}>{el.groupname}</Typography>;
-              })}
+            <Stack direction={"column"} spacing={1}>
+              {allGroups?.length !== 0 &&
+                allGroups?.map((el, index) => {
+                  return (
+                    <Chip key={index} label={el.groupname} variant="filled" />
+                  );
+                })}
+            </Stack>
           </Paper>
         </Grid>
         <Grid item xs={8}>

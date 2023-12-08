@@ -5,6 +5,8 @@ import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import DarkTheme from "./styles/theme/DarkTheme";
 import { SnackbarProvider } from "notistack";
 import { PrivateRoutes } from "./Routes";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -13,17 +15,19 @@ const root = ReactDOM.createRoot(
 const darkThem = createTheme(DarkTheme);
 root.render(
   <React.StrictMode>
-    <ThemeProvider theme={darkThem}>
-      <SnackbarProvider
-        maxSnack={2}
-        data-testid="toastid"
-        autoHideDuration={3000}
-        anchorOrigin={{ horizontal: "center", vertical: "top" }}
-      >
-        <CssBaseline enableColorScheme />
-        <PrivateRoutes />
-      </SnackbarProvider>
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={darkThem}>
+        <SnackbarProvider
+          maxSnack={2}
+          data-testid="toastid"
+          autoHideDuration={3000}
+          anchorOrigin={{ horizontal: "center", vertical: "top" }}
+        >
+          <CssBaseline enableColorScheme />
+          <PrivateRoutes />
+        </SnackbarProvider>
+      </ThemeProvider>
+    </Provider>
   </React.StrictMode>
 );
 
