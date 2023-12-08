@@ -6,6 +6,10 @@ import axios from "axios";
 import { groupRoutes } from "../utils/APIRoutes";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../utils/routes/constants";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { RootState } from "../redux/store";
+import { CreateGroupAsync } from "../redux/reducers/group";
+import { CreateGroupReq } from "../interfaces/Group";
 
 const inputs: CustomInputFormProps[] = [
   {
@@ -21,26 +25,16 @@ const inputs: CustomInputFormProps[] = [
 const CreateGroup = () => {
   //navigate
   const navigate = useNavigate();
-  //routes
-  const { AUTH } = ROUTES;
-  //functions
-  const handleCreateGroup = async (vals: any) => {
-    try {
-      const { data } = await axios.post(groupRoutes, vals);
 
-      if (data.status) {
-        enqueueSnackbar(data.msg, {
-          variant: "success",
-        });
-        navigate(AUTH.CHAT_GROUP);
-      } else if (!data.status) {
-        enqueueSnackbar(data.msg, {
-          variant: "error",
-        });
-      }
-    } catch (error: any) {
-      console.error("Error:", error.message);
-    }
+  //selectors
+  const { status } = useAppSelector((state: RootState) => state.Group);
+
+  //dispatcher
+  const dispatch = useAppDispatch();
+
+  //functions
+  const handleCreateGroup = async (vals: CreateGroupReq) => {
+    dispatch(CreateGroupAsync(vals, navigate));
   };
 
   return (
@@ -52,7 +46,7 @@ const CreateGroup = () => {
             inputs={inputs}
             onSubmit={handleCreateGroup}
             submitLable={"create group"}
-            // status={load ? "loading" : "nothing"}
+            status={status === "loading" ? "loading" : "nothing"}
           ></CustomForm>
         </Paper>
       </Grid>

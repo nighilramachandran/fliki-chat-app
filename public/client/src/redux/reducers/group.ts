@@ -2,11 +2,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { AppThunk } from "../store";
 import { LoginReq, RegisterReq, RequestStatus } from "../../interfaces";
-import { loginRoutes, regiserRoutes } from "../../utils/APIRoutes";
+import { groupRoutes, loginRoutes, regiserRoutes } from "../../utils/APIRoutes";
 import { enqueueSnackbar } from "notistack";
 import { NavigateFunction } from "react-router-dom";
 import { ROUTES } from "../../utils/routes/constants";
-// import { API } from "@/utility/api/constants";
+import { CreateGroupReq } from "../../interfaces/Group";
 
 interface InitialState {
   status: RequestStatus;
@@ -18,8 +18,8 @@ const initialState: InitialState = {
   authenticated: false,
 };
 
-const AuthSlice = createSlice({
-  name: "Auth",
+const GroupSlice = createSlice({
+  name: "Group",
   initialState,
   reducers: {
     setStatus: (state, { payload }: PayloadAction<RequestStatus>) => {
@@ -31,48 +31,21 @@ const AuthSlice = createSlice({
   },
 });
 
-export const { setStatus, setAuthentication } = AuthSlice.actions;
+export const { setStatus, setAuthentication } = GroupSlice.actions;
 
-export const LoginAsync =
-  (req: LoginReq, navigate: NavigateFunction): AppThunk =>
+export const CreateGroupAsync =
+  (req: CreateGroupReq, navigate: NavigateFunction): AppThunk =>
   async (dispatch) => {
     dispatch(setStatus("loading"));
-
     const { AUTH } = ROUTES;
     try {
-      const { data } = await axios.post(loginRoutes, req);
-      if (data.status) {
-        dispatch(setStatus("data"));
-        localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        navigate(AUTH.CHAT_GROUP);
-        dispatch(setAuthentication(data.status));
-      }
-      if (!data.status) {
-        dispatch(setAuthentication(data.status));
-        dispatch(setStatus("error"));
-        enqueueSnackbar(data.msg, {
-          variant: "error",
-        });
-      }
-    } catch (error: any) {
-      dispatch(setStatus("error"));
-    }
-  };
-
-export const RegisterAsync =
-  (req: RegisterReq, navigate: NavigateFunction): AppThunk =>
-  async (dispatch) => {
-    dispatch(setStatus("loading"));
-
-    const { ROOT } = ROUTES;
-    try {
-      const { data } = await axios.post(regiserRoutes, req);
+      const { data } = await axios.post(groupRoutes, req);
       if (data.status) {
         dispatch(setStatus("data"));
         enqueueSnackbar(data.msg, {
           variant: "success",
         });
-        navigate(ROOT);
+        navigate(AUTH.CHAT_GROUP);
       }
       if (!data.status) {
         dispatch(setStatus("error"));
@@ -85,4 +58,4 @@ export const RegisterAsync =
     }
   };
 
-export default AuthSlice;
+export default GroupSlice;
