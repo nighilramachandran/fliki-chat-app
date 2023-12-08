@@ -1,6 +1,10 @@
 export const ROUTES = {
-  AUTH: {
-    ROOT: `/`,
+  ROOT: `/`,
+  GUEST: {
     REGISTER: "/register",
+  },
+  AUTH: {
+    CHAT_GROUP: "/chat-group",
+    CREATE_GROUP: "/create-group",
   },
 };

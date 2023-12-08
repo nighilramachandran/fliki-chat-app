@@ -26,7 +26,7 @@ const inputs: CustomInputFormProps[] = [
   },
 ];
 
-const { AUTH } = ROUTES;
+const { ROOT, GUEST, AUTH } = ROUTES;
 
 const SignIn = () => {
   //navigate
@@ -37,28 +37,32 @@ const SignIn = () => {
 
   //functions
   const handleSignUp = () => {
-    navigate(AUTH.REGISTER);
+    navigate(GUEST.REGISTER);
   };
 
   const handleSignIn = async (vals: any) => {
     setLoad((prev) => !prev);
     try {
       const { data } = await axios.post(loginRoutes, vals);
+
       if (data.status) {
         localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        // navigate(AUTH.ROOT);
+        navigate(AUTH.CHAT_GROUP);
       } else if (!data.status) {
+        navigate(ROOT);
         enqueueSnackbar(data.msg, {
           variant: "error",
         });
       }
     } catch (error: any) {
+      setLoad((prev) => !prev);
       console.error("Error:", error.message);
     }
+    setLoad((prev) => !prev);
   };
 
   return (
-    <Grid container alignItems={"center"} justifyContent={"center"}>
+    <Grid container justifyContent={"center"}>
       <Grid item xs={5}>
         <Paper sx={{ padding: "40px" }}>
           <Stack spacing={2}>

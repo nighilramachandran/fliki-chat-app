@@ -22,7 +22,11 @@ module.exports.register = async (req, res, next) => {
       userPassword: hashedPassword,
     });
     delete user.loginPassword;
-    return res.json({ status: true, user, msg: "User Created Successfully" });
+    return res.json({
+      status: true,
+      user: { ...user._doc, userPassword: undefined },
+      msg: "User Created Successfully",
+    });
   } catch (ex) {
     next(ex);
   }
@@ -34,19 +38,20 @@ module.exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    console.log("email and password", email, password);
-
     const user = await User.findOne({ email });
 
-    const isPasswordValid = await bycrypt.compare(password, user.userPassword);
-
-    if (!user || !isPasswordValid) {
+    if (!user) {
       return res.json({ msg: "Invalid Credential", status: false });
     }
-    // const emailCheck = await User.findOne({ email });
-    // if (emailCheck) {
-    //   return res.json({ msg: "Email Already exist", status: false });
-    // }
+    const isPasswordValid = await bycrypt.compare(password, user.userPassword);
+    if (!isPasswordValid) {
+      return res.json({ msg: "Invalid Credential", status: false });
+    }
+    delete user.userPassword;
+    return res.json({
+      status: true,
+      user: { ...user._doc, userPassword: undefined },
+    });
   } catch (ex) {
     next(ex);
   }

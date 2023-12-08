@@ -50,7 +50,7 @@ const Register = () => {
   const [load, setLoad] = useState<boolean>(false);
 
   //routes
-  const { AUTH } = ROUTES;
+  const { ROOT } = ROUTES;
 
   //functions
   const handleRegister = async (vals: any) => {
@@ -61,8 +61,8 @@ const Register = () => {
         enqueueSnackbar(data.msg, {
           variant: "success",
         });
-        localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        navigate(AUTH.ROOT);
+        // localStorage.setItem("chat-app-user", JSON.stringify(data.user));
+        navigate(ROOT);
       } else {
         enqueueSnackbar(data.msg, {
           variant: "error",
@@ -74,7 +74,7 @@ const Register = () => {
   };
 
   const handleSignIn = () => {
-    navigate(AUTH.ROOT);
+    navigate(ROOT);
   };
 
   return (

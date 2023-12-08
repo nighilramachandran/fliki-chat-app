@@ -11,9 +11,9 @@ export const Layout: React.FC = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-          minHeight: "80vh",
+          minHeight: "90vh",
           position: "relative",
-          padding: "0px !important",
+          padding: "10px",
         }}
       >
         <Outlet />
