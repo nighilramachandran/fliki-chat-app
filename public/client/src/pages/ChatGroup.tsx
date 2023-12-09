@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../utils/routes/constants";
 import { Box, Button, Chip, Grid, Paper, Stack } from "@mui/material";
@@ -12,6 +12,8 @@ import { setUser } from "../redux/reducers/auth";
 const ChatGroup = () => {
   //routes
   const { AUTH } = ROUTES;
+  //states
+  const [joinGroup, setjoinGroup] = useState<boolean>(false);
 
   //dispatcher
   const dispatch = useAppDispatch();
@@ -19,8 +21,6 @@ const ChatGroup = () => {
   //selectors
   const { groups } = useAppSelector((state: RootState) => state.Group);
   const { user } = useAppSelector((state: RootState) => state.Auth);
-
-  // const isUserInGroup = groups.users.some((user) => user.userId === userId);
 
   //navigate
   const navigate = useNavigate();
@@ -33,6 +33,7 @@ const ChatGroup = () => {
   const handleJoinGrop = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
+    setjoinGroup((prev) => !prev);
     dispatch(
       JoinGroupAsync({
         groupId: e.currentTarget.value,
@@ -45,7 +46,7 @@ const ChatGroup = () => {
   //effects
   useEffect(() => {
     dispatch(GetAllGroupAsync());
-  }, []);
+  }, [dispatch, joinGroup]);
 
   //effects
   useEffect(() => {
@@ -70,7 +71,43 @@ const ChatGroup = () => {
           <Paper sx={{ height: "80vh" }}>
             <Stack direction={"column"} spacing={1}>
               {groups?.length !== 0 &&
-                groups?.map((el, index) => {
+                groups.map((el, ind) => {
+                  return (
+                    <Grid
+                      key={ind}
+                      container
+                      direction={"row"}
+                      alignItems={"center"}
+                      justifyContent={"center"}
+                    >
+                      <Grid item xs={6}>
+                        <Chip
+                          sx={{ width: "100%" }}
+                          key={ind}
+                          label={el.groupname}
+                          variant="filled"
+                        />
+                      </Grid>
+                      <Grid
+                        item
+                        xs={6}
+                        display={"flex"}
+                        alignItems={"center"}
+                        justifyContent={"center"}
+                      >
+                        <Button
+                          value={el._id}
+                          onClick={(e) => handleJoinGrop(e)}
+                          variant="text"
+                        >
+                          Join Group
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  );
+                })}
+              {/* {groups?.length !== 0 &&
+                groups?.map((el, ind) => {
                   return (
                     <Grid
                       key={index}
@@ -104,7 +141,7 @@ const ChatGroup = () => {
                       </Grid>
                     </Grid>
                   );
-                })}
+                })} */}
             </Stack>
           </Paper>
         </Grid>

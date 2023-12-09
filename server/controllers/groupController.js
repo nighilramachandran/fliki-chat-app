@@ -11,12 +11,13 @@ module.exports.creategroup = async (req, res, next) => {
       return res.json({ msg: "Group Name Already exist", status: false });
     }
 
-    const group = await Group.create({
-      groupname,
+    const groups = await Group.create({
+      groupname: groupname,
     });
+
     return res.json({
       status: true,
-      group,
+      groups,
       msg: "Group Created Successfully",
     });
   } catch (ex) {
@@ -33,7 +34,7 @@ module.exports.getAllGroups = async (req, res, next) => {
       return res.json({ msg: "No Groups Found", status: false });
     }
 
-    return res.json({ status: true, groups });
+    return res.json({ status: true, groups, msg: "" });
   } catch (ex) {
     next(ex);
   }
@@ -42,42 +43,33 @@ module.exports.getAllGroups = async (req, res, next) => {
 // Function to join group
 module.exports.joinGroup = async (req, res, next) => {
   try {
-    // console.log("comming", req.body);
-
     const { groupId, username, userId } = req.body;
 
     const user = await User.findById(userId);
-    const group = await Group.findById(groupId);
 
-    // console.log("group", group);
+    const groups = await Group.findById(groupId);
 
-    // Check if the user and group exist
-    if (!user || !group) {
+    if (!user || !groups) {
       return res.json({ msg: "User or group not found", status: false });
     }
 
-    // // Check if the user is already in the group
-    // if (group.users.includes(userId)) {
-    //   return res.json({ msg: "User is already in the group", status: false });
-    // }
-
     // Check if the user is already in the group
-    if (group.users.some((user) => user.userId.equals(userId))) {
+    if (groups.users.some((user) => user.userId.equals(userId))) {
       return res.json({ msg: "User is already in the group", status: false });
     }
 
-    // Add the user to the group
-    // group.users.push(userId);
-    group.users.push({
+    groups.users.push({
       userId: userId,
       username: username,
       isOnline: true,
     });
-    await group.save();
+    await groups.save();
+
+    let allGroup = await Group.find();
 
     return res.json({
       status: true,
-      group,
+      groups: allGroup,
       msg: "Joined Group Successfully",
     });
   } catch (ex) {

@@ -47,7 +47,7 @@ const CreateGroup = () => {
             inputs={inputs}
             onSubmit={handleCreateGroup}
             submitLable={"create group"}
-            status={status === "loading" ? "loading" : "nothing"}
+            // status={status === "loading" ? "loading" : "nothing"}
           ></CustomForm>
         </Paper>
       </Grid>

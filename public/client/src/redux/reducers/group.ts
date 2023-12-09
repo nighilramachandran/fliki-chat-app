@@ -46,6 +46,7 @@ export const CreateGroupAsync =
     const { AUTH } = ROUTES;
     try {
       const { data } = await axios.post(groupRoutes, req);
+
       if (data.status) {
         dispatch(setStatus("data"));
         enqueueSnackbar(data.msg, {
@@ -54,7 +55,6 @@ export const CreateGroupAsync =
         navigate(AUTH.CHAT_GROUP);
       }
       if (!data.status) {
-        dispatch(setStatus("error"));
         enqueueSnackbar(data.msg, {
           variant: "error",
         });
@@ -64,19 +64,18 @@ export const CreateGroupAsync =
     }
   };
 export const GetAllGroupAsync = (): AppThunk => async (dispatch) => {
-  dispatch(setStatus("loading"));
   try {
-    const { data } = await axios.get<GroupRoot>(getAllGroupRoutes);
+    const { data } = await axios.get<GroupRoot>(groupRoutes);
 
     if (data.status) {
       dispatch(setStatus("data"));
       dispatch(setGroup(data.groups));
-      enqueueSnackbar(data.msg, {
-        variant: "success",
-      });
+      data.msg !== "" &&
+        enqueueSnackbar(data.msg, {
+          variant: "success",
+        });
     }
     if (!data.status) {
-      dispatch(setStatus("error"));
       enqueueSnackbar(data.msg, {
         variant: "error",
       });
@@ -92,14 +91,16 @@ export const JoinGroupAsync =
     dispatch(setStatus("loading"));
     try {
       const { data } = await axios.post(joinGroupRoutes, req);
+
       if (data.status) {
         dispatch(setStatus("data"));
+        dispatch(setGroup(data.groups));
         enqueueSnackbar(data.msg, {
           variant: "success",
         });
       }
       if (!data.status) {
-        dispatch(setStatus("error"));
+        dispatch(setStatus("nothing"));
         enqueueSnackbar(data.msg, {
           variant: "error",
         });

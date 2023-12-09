@@ -60,7 +60,7 @@ export const LoginAsync =
       }
       if (!data.status) {
         dispatch(setAuthentication(data.status));
-        dispatch(setStatus("error"));
+
         enqueueSnackbar(data.msg, {
           variant: "error",
         });
@@ -86,7 +86,6 @@ export const RegisterAsync =
         navigate(ROOT);
       }
       if (!data.status) {
-        dispatch(setStatus("error"));
         enqueueSnackbar(data.msg, {
           variant: "error",
         });
