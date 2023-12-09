@@ -8,12 +8,11 @@ import { GetAllGroupAsync, JoinGroupAsync } from "../redux/reducers/group";
 import { RootState } from "../redux/store";
 import styled from "@emotion/styled";
 import { setUser } from "../redux/reducers/auth";
+import { Group, GroupRoot } from "../interfaces/Group";
 
 const ChatGroup = () => {
   //routes
   const { AUTH } = ROUTES;
-  //states
-  const [joinGroup, setjoinGroup] = useState<boolean>(false);
 
   //dispatcher
   const dispatch = useAppDispatch();
@@ -21,6 +20,8 @@ const ChatGroup = () => {
   //selectors
   const { groups } = useAppSelector((state: RootState) => state.Group);
   const { user } = useAppSelector((state: RootState) => state.Auth);
+
+  console.log("groups", groups);
 
   //navigate
   const navigate = useNavigate();
@@ -33,7 +34,6 @@ const ChatGroup = () => {
   const handleJoinGrop = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    setjoinGroup((prev) => !prev);
     dispatch(
       JoinGroupAsync({
         groupId: e.currentTarget.value,
@@ -46,7 +46,7 @@ const ChatGroup = () => {
   //effects
   useEffect(() => {
     dispatch(GetAllGroupAsync());
-  }, [dispatch, joinGroup]);
+  }, [dispatch]);
 
   //effects
   useEffect(() => {
@@ -70,78 +70,55 @@ const ChatGroup = () => {
         <Grid item xs={4}>
           <Paper sx={{ height: "80vh" }}>
             <Stack direction={"column"} spacing={1}>
-              {groups?.length !== 0 &&
-                groups.map((el, ind) => {
-                  return (
+              {groups.map((group, ind) => {
+                const isUserInGroup = group.users.some(
+                  (ur) => ur.userId === user[0]._id
+                );
+
+                return (
+                  <Grid
+                    key={ind}
+                    container
+                    direction={"row"}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                  >
+                    <Grid item xs={6}>
+                      <Chip
+                        sx={{ width: "100%" }}
+                        key={ind}
+                        label={group.groupname}
+                        variant="filled"
+                      />
+                    </Grid>
                     <Grid
-                      key={ind}
-                      container
-                      direction={"row"}
+                      item
+                      xs={6}
+                      display={"flex"}
                       alignItems={"center"}
                       justifyContent={"center"}
                     >
-                      <Grid item xs={6}>
-                        <Chip
-                          sx={{ width: "100%" }}
-                          key={ind}
-                          label={el.groupname}
-                          variant="filled"
-                        />
-                      </Grid>
-                      <Grid
-                        item
-                        xs={6}
-                        display={"flex"}
-                        alignItems={"center"}
-                        justifyContent={"center"}
-                      >
+                      {isUserInGroup ? (
                         <Button
-                          value={el._id}
+                          value={group._id}
+                          // onClick={(e) => handleJoinGrop(e)}
+                          variant="text"
+                        >
+                          Chat in Group
+                        </Button>
+                      ) : (
+                        <Button
+                          value={group._id}
                           onClick={(e) => handleJoinGrop(e)}
                           variant="text"
                         >
                           Join Group
                         </Button>
-                      </Grid>
+                      )}
                     </Grid>
-                  );
-                })}
-              {/* {groups?.length !== 0 &&
-                groups?.map((el, ind) => {
-                  return (
-                    <Grid
-                      key={index}
-                      container
-                      direction={"row"}
-                      alignItems={"center"}
-                      justifyContent={"center"}
-                    >
-                      <Grid item xs={6}>
-                        <Chip
-                          sx={{ width: "100%" }}
-                          key={index}
-                          label={el.groupname}
-                          variant="filled"
-                        />
-                      </Grid>
-                      <Grid
-                        item
-                        xs={6}
-                        display={"flex"}
-                        alignItems={"center"}
-                        justifyContent={"center"}
-                      >
-                        <Button
-                          value={el._id}
-                          onClick={(e) => handleJoinGrop(e)}
-                          variant="text"
-                        >
-                          Join Group
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  );
-                })} */}
+                  </Grid>
+                );
+              })}
             </Stack>
           </Paper>
         </Grid>
