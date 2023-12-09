@@ -11,6 +11,14 @@ import { RegisterAsync } from "../redux/reducers/auth";
 
 const inputs: CustomInputFormProps[] = [
   {
+    type: "text",
+    name: "username",
+    label: "User Name",
+    placeholder: "User Name",
+    validate: { required: true },
+    colProps: { xs: 12 },
+  },
+  {
     type: "email",
     name: "email",
     label: "Email",

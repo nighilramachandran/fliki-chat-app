@@ -13,11 +13,12 @@ import { LoginReq } from "../interfaces/Auth";
 
 const inputs: CustomInputFormProps[] = [
   {
-    type: "text",
+    type: "email",
     name: "email",
     label: "Email",
     placeholder: "Email",
     validate: { required: true },
+    autoComplete: "false",
     colProps: { xs: 12 },
   },
   {

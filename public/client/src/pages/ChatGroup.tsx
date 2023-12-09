@@ -1,19 +1,27 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../utils/routes/constants";
-import { Button, Chip, Grid, Paper, Stack, Typography } from "@mui/material";
-import axios from "axios";
-import { getAllGroupRoutes } from "../utils/APIRoutes";
+import { Box, Button, Chip, Grid, Paper, Stack } from "@mui/material";
 
-interface Group {
-  groupname: string;
-}
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { GetAllGroupAsync, JoinGroupAsync } from "../redux/reducers/group";
+import { RootState } from "../redux/store";
+import styled from "@emotion/styled";
+import { setUser } from "../redux/reducers/auth";
 
 const ChatGroup = () => {
-  //states
-  const [allGroups, setAllGroups] = useState<Group[]>();
   //routes
-  const { ROOT, AUTH } = ROUTES;
+  const { AUTH } = ROUTES;
+
+  //dispatcher
+  const dispatch = useAppDispatch();
+
+  //selectors
+  const { groups } = useAppSelector((state: RootState) => state.Group);
+  const { user } = useAppSelector((state: RootState) => state.Auth);
+
+  // const isUserInGroup = groups.users.some((user) => user.userId === userId);
+
   //navigate
   const navigate = useNavigate();
 
@@ -22,28 +30,31 @@ const ChatGroup = () => {
     navigate(AUTH.CREATE_GROUP);
   };
 
-  //functions
-  const getAllGroups = async () => {
-    try {
-      const { data } = await axios.get(getAllGroupRoutes);
-
-      if (data.status) {
-        setAllGroups(data.groups);
-      }
-    } catch (error: any) {
-      console.error("Error:", error.message);
-    }
+  const handleJoinGrop = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    dispatch(
+      JoinGroupAsync({
+        groupId: e.currentTarget.value,
+        userId: user[0]._id,
+        username: user[0].username,
+      })
+    );
   };
 
   //effects
   useEffect(() => {
-    getAllGroups();
+    dispatch(GetAllGroupAsync());
   }, []);
 
+  //effects
   useEffect(() => {
-    const user = localStorage.getItem("chat-app-user");
-    if (!user) navigate(ROOT);
-  }, []);
+    const storedUserString = localStorage.getItem("chat-app-user");
+    if (storedUserString !== null) {
+      const storedUser = JSON.parse(storedUserString);
+      dispatch(setUser([storedUser]));
+    }
+  }, [dispatch]);
 
   return (
     <Stack direction={"column"} flexGrow={1} gap={2}>
@@ -58,21 +69,59 @@ const ChatGroup = () => {
         <Grid item xs={4}>
           <Paper sx={{ height: "80vh" }}>
             <Stack direction={"column"} spacing={1}>
-              {allGroups?.length !== 0 &&
-                allGroups?.map((el, index) => {
+              {groups?.length !== 0 &&
+                groups?.map((el, index) => {
                   return (
-                    <Chip key={index} label={el.groupname} variant="filled" />
+                    <Grid
+                      key={index}
+                      container
+                      direction={"row"}
+                      alignItems={"center"}
+                      justifyContent={"center"}
+                    >
+                      <Grid item xs={6}>
+                        <Chip
+                          sx={{ width: "100%" }}
+                          key={index}
+                          label={el.groupname}
+                          variant="filled"
+                        />
+                      </Grid>
+                      <Grid
+                        item
+                        xs={6}
+                        display={"flex"}
+                        alignItems={"center"}
+                        justifyContent={"center"}
+                      >
+                        <Button
+                          value={el._id}
+                          onClick={(e) => handleJoinGrop(e)}
+                          variant="text"
+                        >
+                          Join Group
+                        </Button>
+                      </Grid>
+                    </Grid>
                   );
                 })}
             </Stack>
           </Paper>
         </Grid>
         <Grid item xs={8}>
-          <Paper sx={{ height: "80vh" }}></Paper>
+          <Paper sx={{ height: "80vh" }}>
+            <StyledBoxInner />
+          </Paper>
         </Grid>
       </Grid>
     </Stack>
   );
 };
+
+const StyledBoxInner = styled(Box)(({ theme }: any) => ({
+  width: "100%",
+  height: "100%",
+  background: `${theme.palette.background.default}`,
+}));
 
 export default ChatGroup;

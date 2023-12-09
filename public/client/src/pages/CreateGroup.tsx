@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CustomForm, CustomInputFormProps } from "../components/form";
 import { Grid, Paper } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { RootState } from "../redux/store";
 import { CreateGroupAsync } from "../redux/reducers/group";
 import { CreateGroupReq } from "../interfaces/Group";
+import { setUser } from "../redux/reducers/auth";
 
 const inputs: CustomInputFormProps[] = [
   {

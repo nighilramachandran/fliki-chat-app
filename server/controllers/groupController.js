@@ -1,4 +1,5 @@
 const Group = require("../model/groupModel");
+const User = require("../model/userModel");
 
 //function to create group
 
@@ -33,6 +34,52 @@ module.exports.getAllGroups = async (req, res, next) => {
     }
 
     return res.json({ status: true, groups });
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+// Function to join group
+module.exports.joinGroup = async (req, res, next) => {
+  try {
+    // console.log("comming", req.body);
+
+    const { groupId, username, userId } = req.body;
+
+    const user = await User.findById(userId);
+    const group = await Group.findById(groupId);
+
+    // console.log("group", group);
+
+    // Check if the user and group exist
+    if (!user || !group) {
+      return res.json({ msg: "User or group not found", status: false });
+    }
+
+    // // Check if the user is already in the group
+    // if (group.users.includes(userId)) {
+    //   return res.json({ msg: "User is already in the group", status: false });
+    // }
+
+    // Check if the user is already in the group
+    if (group.users.some((user) => user.userId.equals(userId))) {
+      return res.json({ msg: "User is already in the group", status: false });
+    }
+
+    // Add the user to the group
+    // group.users.push(userId);
+    group.users.push({
+      userId: userId,
+      username: username,
+      isOnline: true,
+    });
+    await group.save();
+
+    return res.json({
+      status: true,
+      group,
+      msg: "Joined Group Successfully",
+    });
   } catch (ex) {
     next(ex);
   }

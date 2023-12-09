@@ -1,7 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { AppThunk } from "../store";
-import { LoginReq, RegisterReq, RequestStatus } from "../../interfaces";
+import {
+  LoginReq,
+  RegisterReq,
+  RequestStatus,
+  User,
+  UserRoot,
+} from "../../interfaces";
 import { loginRoutes, regiserRoutes } from "../../utils/APIRoutes";
 import { enqueueSnackbar } from "notistack";
 import { NavigateFunction } from "react-router-dom";
@@ -11,11 +17,13 @@ import { ROUTES } from "../../utils/routes/constants";
 interface InitialState {
   status: RequestStatus;
   authenticated: Boolean;
+  user: User[];
 }
 
 const initialState: InitialState = {
   status: "nothing",
   authenticated: false,
+  user: [],
 };
 
 const AuthSlice = createSlice({
@@ -28,24 +36,27 @@ const AuthSlice = createSlice({
     setAuthentication: (state, { payload }: PayloadAction<Boolean>) => {
       state.authenticated = payload;
     },
+    setUser: (state, { payload }: PayloadAction<User[]>) => {
+      state.user = payload;
+    },
   },
 });
 
-export const { setStatus, setAuthentication } = AuthSlice.actions;
+export const { setStatus, setAuthentication, setUser } = AuthSlice.actions;
 
 export const LoginAsync =
   (req: LoginReq, navigate: NavigateFunction): AppThunk =>
   async (dispatch) => {
     dispatch(setStatus("loading"));
-
     const { AUTH } = ROUTES;
     try {
-      const { data } = await axios.post(loginRoutes, req);
+      const { data } = await axios.post<UserRoot>(loginRoutes, req);
+
       if (data.status) {
         dispatch(setStatus("data"));
         localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        navigate(AUTH.CHAT_GROUP);
         dispatch(setAuthentication(data.status));
+        navigate(AUTH.CHAT_GROUP);
       }
       if (!data.status) {
         dispatch(setAuthentication(data.status));

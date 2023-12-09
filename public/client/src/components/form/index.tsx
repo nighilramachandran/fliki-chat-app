@@ -158,6 +158,7 @@ export const CustomForm: React.FC<props> = (props) => {
 
   return (
     <form
+      autoComplete="off"
       onSubmit={formik.handleSubmit}
       {...restProps}
       style={{ position: "relative" }}

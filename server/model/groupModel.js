@@ -8,6 +8,16 @@ const userSchema = new mongoose.Schema({
     max: 20,
     unique: true,
   },
+  users: [
+    {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      username: String,
+      isOnline: Boolean,
+    },
+  ],
 });
 
 module.exports = mongoose.model("Groups", userSchema);
