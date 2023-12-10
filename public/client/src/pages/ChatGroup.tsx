@@ -25,6 +25,7 @@ import { CustomForm, CustomInputFormProps } from "../components/form";
 import { AddMessageAsync } from "../redux/reducers/message";
 import { Formik } from "formik";
 import { ChatUsers, Group } from "../interfaces/Group";
+import { LottieLazyLoad } from "../components/lottie-lazyload/LottieLazyLoad";
 
 const inputs: CustomInputFormProps[] = [
   {
@@ -125,6 +126,7 @@ const ChatGroup = () => {
           <ChatContainer
             chatGroupUsers={chatGroupUsers}
             handleAddMessageP={(val) => handleAddMessage(val)}
+            currentGroupId={currentGroupId}
           />
         </Grid>
       </Grid>
@@ -221,11 +223,13 @@ const SideBar = ({
 interface chatGroupUsersProps {
   chatGroupUsers: ChatUsers[];
   handleAddMessageP: (message: string) => void;
+  currentGroupId: string;
 }
 
 const ChatContainer = ({
   chatGroupUsers,
   handleAddMessageP,
+  currentGroupId,
 }: chatGroupUsersProps) => {
   const handleMessage = (msg: string) => {
     handleAddMessageP && handleAddMessageP(msg);
@@ -235,64 +239,73 @@ const ChatContainer = ({
     <Paper
       sx={{
         height: "80vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
-      <Grid container height={"100%"} flexGrow={1} flexShrink={0}>
-        <Grid item xs={3}>
-          <Stack direction={"column"} spacing={2}>
-            {chatGroupUsers.map((user, ind) => {
-              return (
-                <Stack
-                  key={ind}
-                  direction={"row"}
-                  alignItems={"center"}
-                  justifyContent={"start"}
-                  spacing={2}
-                >
-                  <Box
-                    sx={{
-                      width: "10px",
-                      height: "10px",
-                      borderRadius: "50%",
-                      background: "green",
-                    }}
-                  ></Box>
-                  <Avatar
-                    sx={{
-                      background: "transparent",
-                      border: "1px solid #fc9915",
-                      color: "#fc9915",
-                    }}
+      {currentGroupId === "" ? (
+        <Box sx={{ width: "300px", height: "300px" }}>
+          <LottieLazyLoad url={`/lotties/contact.json`} />
+        </Box>
+      ) : (
+        <Grid container height={"100%"} flexGrow={1} flexShrink={0}>
+          <Grid item xs={3}>
+            <Stack direction={"column"} spacing={2}>
+              {chatGroupUsers.map((user, ind) => {
+                return (
+                  <Stack
+                    key={ind}
+                    direction={"row"}
+                    alignItems={"center"}
+                    justifyContent={"start"}
+                    spacing={2}
                   >
-                    {user.username.charAt(0).toUpperCase()}
-                  </Avatar>
+                    <Box
+                      sx={{
+                        width: "10px",
+                        height: "10px",
+                        borderRadius: "50%",
+                        background: "green",
+                      }}
+                    ></Box>
+                    <Avatar
+                      sx={{
+                        background: "transparent",
+                        border: "1px solid #fc9915",
+                        color: "#fc9915",
+                      }}
+                    >
+                      {user.username.charAt(0).toUpperCase()}
+                    </Avatar>
 
-                  <Typography>{user.username}</Typography>
-                </Stack>
-              );
-            })}
-          </Stack>
+                    <Typography>{user.username}</Typography>
+                  </Stack>
+                );
+              })}
+            </Stack>
+          </Grid>
+          <Grid item xs={9} flexGrow={1} flexShrink={0}>
+            <Stack
+              direction={"column"}
+              justifyContent={"space-between"}
+              spacing={2}
+              height={"100%"}
+              flexGrow={1}
+              flexShrink={0}
+            >
+              <StyledBoxInner />
+              <CustomForm
+                formName="form"
+                inputs={inputs}
+                onSubmit={handleMessage}
+                submitLable={"Send"}
+                resetFrom={true}
+              ></CustomForm>
+            </Stack>
+          </Grid>
         </Grid>
-        <Grid item xs={9} flexGrow={1} flexShrink={0}>
-          <Stack
-            direction={"column"}
-            justifyContent={"space-between"}
-            spacing={2}
-            height={"100%"}
-            flexGrow={1}
-            flexShrink={0}
-          >
-            <StyledBoxInner />
-            <CustomForm
-              formName="form"
-              inputs={inputs}
-              onSubmit={handleMessage}
-              submitLable={"Send"}
-              resetFrom={true}
-            ></CustomForm>
-          </Stack>
-        </Grid>
-      </Grid>
+      )}
     </Paper>
   );
 };
