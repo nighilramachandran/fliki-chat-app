@@ -1,5 +1,6 @@
 const Group = require("../model/groupModel");
 const User = require("../model/userModel");
+const ObjectId = require("mongodb").ObjectId;
 
 //function to create group
 
@@ -71,6 +72,41 @@ module.exports.joinGroup = async (req, res, next) => {
       status: true,
       groups: allGroup,
       msg: "Joined Group Successfully",
+    });
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+// Function to get chat group
+
+module.exports.getChatGroup = async (req, res, next) => {
+  try {
+    console.log("req.body", req.body);
+    const { groupId, groupname, userId } = req.body;
+
+    const groups = await Group.find();
+
+    const groupIdToFind = new ObjectId(`${groupId}`);
+    const userIdToCheck = new ObjectId(`${userId}`);
+
+    const foundGroup = groups.find((group) => group._id.equals(groupIdToFind));
+
+    if (!foundGroup) {
+      return res.json({ msg: "Group Not found", status: false });
+    }
+    const userExists = foundGroup.users.some((user) =>
+      user.userId.equals(userIdToCheck)
+    );
+
+    if (!userExists) {
+      return res.json({ msg: "User doesnot exist", status: false });
+    }
+
+    return res.json({
+      status: true,
+      groups: foundGroup,
+      msg: "",
     });
   } catch (ex) {
     next(ex);

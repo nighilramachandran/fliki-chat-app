@@ -21,3 +21,10 @@ export interface User {
   isOnline: boolean;
   _id: string;
 }
+
+export interface ChatUsers {
+  userId: string;
+  username: string;
+  isOnline: boolean;
+  _id: string;
+}

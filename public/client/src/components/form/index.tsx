@@ -144,7 +144,11 @@ export const CustomForm: React.FC<props> = (props) => {
     validate: formValidate,
     onSubmit: async (data: any) => {
       onSubmit(data, formik);
-      if (resetFrom) formik.resetForm();
+      if (resetFrom) {
+        console.log("");
+
+        formik.resetForm();
+      }
     },
   });
 
