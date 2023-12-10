@@ -95,30 +95,30 @@ export const GetAllGroupAsync = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const JoinGroupAsync =
-  (req: any): AppThunk =>
-  async (dispatch) => {
-    dispatch(setStatus("loading"));
-    try {
-      const { data } = await axios.post(joinGroupRoutes, req);
+// export const JoinGroupAsync =
+//   (req: any): AppThunk =>
+//   async (dispatch) => {
+//     dispatch(setStatus("loading"));
+//     try {
+//       const { data } = await axios.post(joinGroupRoutes, req);
 
-      if (data.status) {
-        dispatch(setStatus("data"));
-        dispatch(setGroup(data.groups));
-        enqueueSnackbar(data.msg, {
-          variant: "success",
-        });
-      }
-      if (!data.status) {
-        dispatch(setStatus("nothing"));
-        enqueueSnackbar(data.msg, {
-          variant: "error",
-        });
-      }
-    } catch (error: any) {
-      dispatch(setStatus("error"));
-    }
-  };
+//       if (data.status) {
+//         dispatch(setStatus("data"));
+//         dispatch(setGroup(data.groups));
+//         enqueueSnackbar(data.msg, {
+//           variant: "success",
+//         });
+//       }
+//       if (!data.status) {
+//         dispatch(setStatus("nothing"));
+//         enqueueSnackbar(data.msg, {
+//           variant: "error",
+//         });
+//       }
+//     } catch (error: any) {
+//       dispatch(setStatus("error"));
+//     }
+//   };
 
 export const getChatGroupAsync =
   (req: any): AppThunk =>

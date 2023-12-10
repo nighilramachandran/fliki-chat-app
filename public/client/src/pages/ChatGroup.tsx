@@ -13,27 +13,22 @@ import {
 } from "@mui/material";
 
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import {
-  GetAllGroupAsync,
-  JoinGroupAsync,
-  getChatGroupAsync,
-} from "../redux/reducers/group";
+import { GetAllGroupAsync, getChatGroupAsync } from "../redux/reducers/group";
 import { RootState } from "../redux/store";
 import styled from "@emotion/styled";
 import { setUser } from "../redux/reducers/auth";
 import { CustomForm, CustomInputFormProps } from "../components/form";
-import { AddMessageAsync } from "../redux/reducers/message";
-import { Formik } from "formik";
 import { ChatUsers, Group } from "../interfaces/Group";
 
 import socketIO from "socket.io-client";
+import { enqueueSnackbar } from "notistack";
 const socket = socketIO("http://localhost:3005/");
 socket.on("connect", () => {
   console.log("Connected");
 
   // if you want to join group
   // like axio.post("join api")
-  socket.emit("join", { name: "najeb", groupId: "qweq" });
+  // socket.emit("join", { name: "FirstGroup", groupId: "qweq" });
 
   // if you want to send message
   // axios.post("send message")
@@ -62,11 +57,17 @@ const sendMessage = () => {
     name: "najeb",
   });
 };
-sendMessage();
+// sendMessage();
 
 console.log(socket);
 socket.on("connect", () => {
   console.log("Connect", socket.id); // x8WIv7-mJelg7on_ALbx
+});
+
+socket.on("groupJoined", ({ message, status }) => {
+  enqueueSnackbar(message, {
+    variant: status ? "success" : "error",
+  });
 });
 const inputs: CustomInputFormProps[] = [
   {
@@ -82,16 +83,17 @@ const ChatGroup = () => {
   //routes
   const { AUTH } = ROUTES;
 
-  //states
-  const [currentGroupId, setCurrentGroupId] = useState<string>("");
-
   //dispatcher
   const dispatch = useAppDispatch();
+
+  //states
+  const [groupButtons, setgroupButtons] = useState<boolean>(false);
 
   //selectors
   const { groups, chatGroupUsers } = useAppSelector(
     (state: RootState) => state.Group
   );
+
   const { user } = useAppSelector((state: RootState) => state.Auth);
 
   //navigate
@@ -102,31 +104,21 @@ const ChatGroup = () => {
     navigate(AUTH.CREATE_GROUP);
   };
 
-  const handleJoinGroup = (ChatGroupId: string) => {
-    dispatch(
-      JoinGroupAsync({
-        groupId: ChatGroupId,
-        userId: user[0]._id,
-        username: user[0].username,
-      })
-    );
-  };
-  const handleChatGroup = (ChatGroupId: string) => {
-    setCurrentGroupId(ChatGroupId);
-    dispatch(
-      getChatGroupAsync({
-        groupId: ChatGroupId,
-        userId: user[0]._id,
-      })
-    );
+  const handleJoinGroup = (groupname: string, groupId: string) => {
+    socket.emit("join", {
+      groupname: groupname,
+      groupId: groupId,
+      userId: user[0]._id,
+      username: user[0].username,
+    });
+    setgroupButtons((prev) => !prev);
   };
 
-  const handleAddMessage = (msg: any) => {
+  const handleChatUsers = (groupId: string) => {
     dispatch(
-      AddMessageAsync({
-        message: msg.message,
-        senderId: user[0]._id,
-        groupId: currentGroupId,
+      getChatGroupAsync({
+        groupId: groupId,
+        userId: user[0]._id,
       })
     );
   };
@@ -145,6 +137,15 @@ const ChatGroup = () => {
     }
   }, [dispatch]);
 
+  // useEffect(() => {
+  //   dispatch(
+  //     getChatGroupAsync({
+  //       groupId: currentGroupId,
+  //       userId: user[0]._id,
+  //     })
+  //   );
+  // }, [currentGroupId]);
+
   return (
     <Stack direction={"column"} flexGrow={1} gap={2}>
       <Button
@@ -159,16 +160,14 @@ const ChatGroup = () => {
           <SideBar
             grp={groups}
             user={user}
-            handleChatGroupP={(GroupId) => handleChatGroup(GroupId)}
-            handleJoinGroupP={(ChatGroupId) => handleJoinGroup(ChatGroupId)}
+            handleJoinGroupP={(groupname, groupId) =>
+              handleJoinGroup(groupname, groupId)
+            }
+            handleChatUsersP={(groupId) => handleChatUsers(groupId)}
           />
         </Grid>
         <Grid item xs={8}>
-          <ChatContainer
-            chatGroupUsers={chatGroupUsers}
-            handleAddMessageP={(val) => handleAddMessage(val)}
-            currentGroupId={currentGroupId}
-          />
+          <ChatContainer chatGroupUsers={chatGroupUsers} />
         </Grid>
       </Grid>
     </Stack>
@@ -179,8 +178,8 @@ const ChatGroup = () => {
 interface SideBarProps {
   grp: any;
   user: any;
-  handleChatGroupP: (GroupId: string) => void;
-  handleJoinGroupP: (ChatGroupId: string) => void;
+  handleJoinGroupP: (groupname: string, groupId: string) => void;
+  handleChatUsersP: (groupId: string) => void;
 }
 
 // components
@@ -188,30 +187,24 @@ interface SideBarProps {
 const SideBar = ({
   grp,
   user,
-  handleChatGroupP,
   handleJoinGroupP,
+  handleChatUsersP,
 }: SideBarProps) => {
-  const handleChatGrp = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    const ChatGroupId = e.currentTarget.value;
-    handleChatGroupP && handleChatGroupP(ChatGroupId);
+  const handleJoinGrp = (ind: number) => {
+    handleJoinGroupP && handleJoinGroupP(grp[ind].groupname, grp[ind]._id);
   };
-  const handleJoinGrp = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    const ChatGroupId = e.currentTarget.value;
-    handleJoinGroupP && handleJoinGroupP(ChatGroupId);
+
+  const handleChipClick = (ind: number) => {
+    handleChatUsersP && handleChatUsersP(grp[ind]._id);
   };
 
   return (
     <Paper sx={{ height: "80vh" }}>
-      <Stack direction={"column"} spacing={1}>
+      <Stack direction={"column"} spacing={2} alignItems={"center"}>
+        <Typography sx={{ fontWeight: 800 }}>
+          Click the Group to start Chatting
+        </Typography>
         {grp.map((group: any, ind: any) => {
-          const isUserInGroup = group.users.some(
-            (ur: any) => ur.userId === user[0]._id
-          );
-
           return (
             <Grid
               key={ind}
@@ -222,8 +215,9 @@ const SideBar = ({
             >
               <Grid item xs={6}>
                 <Chip
-                  sx={{ width: "100%" }}
+                  sx={{ width: "100%", cursor: "pointer" }}
                   key={ind}
+                  onClick={() => handleChipClick(ind)}
                   label={group.groupname}
                   variant="filled"
                 />
@@ -235,23 +229,13 @@ const SideBar = ({
                 alignItems={"center"}
                 justifyContent={"center"}
               >
-                {isUserInGroup ? (
-                  <Button
-                    value={group._id}
-                    onClick={(e) => handleChatGrp(e)}
-                    variant="text"
-                  >
-                    Chat in Group
-                  </Button>
-                ) : (
-                  <Button
-                    value={group._id}
-                    onClick={(e) => handleJoinGrp(e)}
-                    variant="text"
-                  >
-                    Join Group
-                  </Button>
-                )}
+                <Button
+                  value={group._id}
+                  onClick={() => handleJoinGrp(ind)}
+                  variant="text"
+                >
+                  Join Group
+                </Button>
               </Grid>
             </Grid>
           );
@@ -263,18 +247,18 @@ const SideBar = ({
 
 interface chatGroupUsersProps {
   chatGroupUsers: ChatUsers[];
-  handleAddMessageP: (message: string) => void;
-  currentGroupId: string;
+  // handleAddMessageP: (message: string) => void;
+  // currentGroupId: string;
 }
 
 const ChatContainer = ({
   chatGroupUsers,
-  handleAddMessageP,
-  currentGroupId,
-}: chatGroupUsersProps) => {
-  const handleMessage = (msg: string) => {
-    handleAddMessageP && handleAddMessageP(msg);
-  };
+}: // handleAddMessageP,
+// currentGroupId,
+chatGroupUsersProps) => {
+  // const handleMessage = (msg: string) => {
+  //   handleAddMessageP && handleAddMessageP(msg);
+  // };
 
   return (
     <Paper
@@ -285,70 +269,63 @@ const ChatContainer = ({
         alignItems: "center",
       }}
     >
-      {currentGroupId === "" ? (
-        <></>
-      ) : (
-        // <Box sx={{ width: "300px", height: "300px" }}>
-        //   <LottieLazyLoad url={`/lotties/contact.json`} />
-        // </Box>
-        <Grid container height={"100%"} flexGrow={1} flexShrink={0}>
-          <Grid item xs={3}>
-            <Stack direction={"column"} spacing={2}>
-              {chatGroupUsers.map((user, ind) => {
-                return (
-                  <Stack
-                    key={ind}
-                    direction={"row"}
-                    alignItems={"center"}
-                    justifyContent={"start"}
-                    spacing={2}
+      <Grid container height={"100%"} flexGrow={1} flexShrink={0}>
+        <Grid item xs={3}>
+          <Stack direction={"column"} spacing={2}>
+            {chatGroupUsers.map((user, ind) => {
+              return (
+                <Stack
+                  key={ind}
+                  direction={"row"}
+                  alignItems={"center"}
+                  justifyContent={"start"}
+                  spacing={2}
+                >
+                  <Box
+                    sx={{
+                      width: "10px",
+                      height: "10px",
+                      borderRadius: "50%",
+                      background: "green",
+                    }}
+                  ></Box>
+                  <Avatar
+                    sx={{
+                      background: "transparent",
+                      border: "1px solid #fc9915",
+                      color: "#fc9915",
+                    }}
                   >
-                    <Box
-                      sx={{
-                        width: "10px",
-                        height: "10px",
-                        borderRadius: "50%",
-                        background: "green",
-                      }}
-                    ></Box>
-                    <Avatar
-                      sx={{
-                        background: "transparent",
-                        border: "1px solid #fc9915",
-                        color: "#fc9915",
-                      }}
-                    >
-                      {user.username.charAt(0).toUpperCase()}
-                    </Avatar>
+                    {user.username.charAt(0).toUpperCase()}
+                  </Avatar>
 
-                    <Typography>{user.username}</Typography>
-                  </Stack>
-                );
-              })}
-            </Stack>
-          </Grid>
-          <Grid item xs={9} flexGrow={1} flexShrink={0}>
-            <Stack
-              direction={"column"}
-              justifyContent={"space-between"}
-              spacing={2}
-              height={"100%"}
-              flexGrow={1}
-              flexShrink={0}
-            >
-              <StyledBoxInner />
-              <CustomForm
-                formName="form"
-                inputs={inputs}
-                onSubmit={sendMessage}
-                // onSubmit={handleMessage}
-                submitLable={"Send"}
-                resetFrom={true}
-              ></CustomForm>
-            </Stack>
-          </Grid>
+                  <Typography>{user.username}</Typography>
+                </Stack>
+              );
+            })}
+          </Stack>
         </Grid>
-      )}
+        <Grid item xs={9} flexGrow={1} flexShrink={0}>
+          <Stack
+            direction={"column"}
+            justifyContent={"space-between"}
+            spacing={2}
+            height={"100%"}
+            flexGrow={1}
+            flexShrink={0}
+          >
+            <StyledBoxInner />
+            <CustomForm
+              formName="form"
+              inputs={inputs}
+              onSubmit={sendMessage}
+              // onSubmit={handleMessage}
+              submitLable={"Send"}
+              resetFrom={true}
+            ></CustomForm>
+          </Stack>
+        </Grid>
+      </Grid>
     </Paper>
   );
 };

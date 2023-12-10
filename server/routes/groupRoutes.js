@@ -1,7 +1,7 @@
 const {
   creategroup,
   getAllGroups,
-  joinGroup,
+  // joinGroup,
   getChatGroup,
 } = require("../controllers/groupController");
 
@@ -17,6 +17,6 @@ router.get("/group", getAllGroups);
 router.post("/chat-group", getChatGroup);
 
 // Route to join groups
-router.post("/join-group", joinGroup);
+// router.post("/join-group", joinGroup);
 
 module.exports = router;

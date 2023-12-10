@@ -42,47 +42,46 @@ module.exports.getAllGroups = async (req, res, next) => {
 };
 
 // Function to join group
-module.exports.joinGroup = async (req, res, next) => {
-  try {
-    const { groupId, username, userId } = req.body;
+// module.exports.joinGroup = async (req, res, next) => {
+//   try {
+//     const { groupId, username, userId, groupname } = req.body;
 
-    const user = await User.findById(userId);
+//     const user = await User.findById(userId);
 
-    const groups = await Group.findById(groupId);
+//     const groups = await Group.findById(groupId);
 
-    if (!user || !groups) {
-      return res.json({ msg: "User or group not found", status: false });
-    }
+//     if (!user || !groups) {
+//       return res.json({ msg: "User or group not found", status: false });
+//     }
 
-    // Check if the user is already in the group
-    if (groups.users.some((user) => user.userId.equals(userId))) {
-      return res.json({ msg: "User is already in the group", status: false });
-    }
+//     // Check if the user is already in the group
+//     if (groups.users.some((user) => user.userId.equals(userId))) {
+//       return res.json({ msg: "User is already in the group", status: false });
+//     }
 
-    groups.users.push({
-      userId: userId,
-      username: username,
-      isOnline: true,
-    });
-    await groups.save();
+//     groups.users.push({
+//       userId: userId,
+//       username: username,
+//       isOnline: true,
+//     });
+//     await groups.save();
 
-    let allGroup = await Group.find();
+//     let allGroup = await Group.find();
 
-    return res.json({
-      status: true,
-      groups: allGroup,
-      msg: "Joined Group Successfully",
-    });
-  } catch (ex) {
-    next(ex);
-  }
-};
+//     return res.json({
+//       status: true,
+//       groups: allGroup,
+//       msg: "Joined Group Successfully",
+//     });
+//   } catch (ex) {
+//     next(ex);
+//   }
+// };
 
 // Function to get chat group
 
 module.exports.getChatGroup = async (req, res, next) => {
   try {
-    console.log("req.body", req.body);
     const { groupId, groupname, userId } = req.body;
 
     const groups = await Group.find();
