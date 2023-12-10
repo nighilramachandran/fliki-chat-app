@@ -4,9 +4,10 @@ const mongoose = require("mongoose");
 const userRoutes = require("./routes/userRoutes");
 const groupRoutes = require("./routes/groupRoutes");
 const messageRoutes = require("./routes/messageRoutes");
-
+const initSocket = require("./ws/index");
 const app = express();
 require("dotenv").config();
+const http = require("http").createServer(app);
 
 app.use(cors());
 app.use(express.json());
@@ -30,3 +31,5 @@ mongoose
 const server = app.listen(process.env.PORT, () => {
   console.log("listing to port", `${process.env.PORT}`);
 });
+
+initSocket(server);

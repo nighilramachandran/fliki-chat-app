@@ -25,8 +25,49 @@ import { CustomForm, CustomInputFormProps } from "../components/form";
 import { AddMessageAsync } from "../redux/reducers/message";
 import { Formik } from "formik";
 import { ChatUsers, Group } from "../interfaces/Group";
-import { LottieLazyLoad } from "../components/lottie-lazyload/LottieLazyLoad";
 
+import socketIO from "socket.io-client";
+const socket = socketIO("http://localhost:3005/");
+socket.on("connect", () => {
+  console.log("Connected");
+
+  // if you want to join group
+  // like axio.post("join api")
+  socket.emit("join", { name: "najeb", groupId: "qweq" });
+
+  // if you want to send message
+  // axios.post("send message")
+});
+// will be called when you receive a message
+socket.on("new-message", (message) => {
+  console.log("new message", message);
+});
+//
+socket.on("logout", () => console.log("Logout"));
+socket.on("join", () => console.log("join"));
+
+socket.on("connection", (socket) => {
+  console.log(`⚡: ${socket.id} user just connected!`);
+  socket.on("disconnect", () => {
+    console.log("🔥: A user disconnected");
+  });
+});
+
+const sendMessage = () => {
+  // const sendMessage = (msg, groupId, name) => {
+  socket.emit("send-message", {
+    test: 1,
+    msg: "hello najeb test by nIhguk",
+    groupId: "qweq",
+    name: "najeb",
+  });
+};
+sendMessage();
+
+console.log(socket);
+socket.on("connect", () => {
+  console.log("Connect", socket.id); // x8WIv7-mJelg7on_ALbx
+});
 const inputs: CustomInputFormProps[] = [
   {
     type: "text",
@@ -245,10 +286,11 @@ const ChatContainer = ({
       }}
     >
       {currentGroupId === "" ? (
-        <Box sx={{ width: "300px", height: "300px" }}>
-          <LottieLazyLoad url={`/lotties/contact.json`} />
-        </Box>
+        <></>
       ) : (
+        // <Box sx={{ width: "300px", height: "300px" }}>
+        //   <LottieLazyLoad url={`/lotties/contact.json`} />
+        // </Box>
         <Grid container height={"100%"} flexGrow={1} flexShrink={0}>
           <Grid item xs={3}>
             <Stack direction={"column"} spacing={2}>
@@ -298,7 +340,8 @@ const ChatContainer = ({
               <CustomForm
                 formName="form"
                 inputs={inputs}
-                onSubmit={handleMessage}
+                onSubmit={sendMessage}
+                // onSubmit={handleMessage}
                 submitLable={"Send"}
                 resetFrom={true}
               ></CustomForm>
