@@ -2,27 +2,23 @@ export interface LoginReq {
   email: string;
   password: string;
 }
+export interface LogOutReq extends Omit<LoginReq, "password"> {}
 
 export interface RegisterReq {
+  username: string;
   email: string;
-  loginPassword: string;
-}
-
-export interface UserRoot {
-  status: boolean;
-  user: User;
-  msg: string;
+  password: string;
 }
 
 export interface User {
   _id: string;
-  email: string;
   username: string;
-  isAvatarImageSet: boolean;
-  avatarImage: string;
-  __v: number;
+  email: string;
+  isOnline: boolean;
 }
 
-export interface Id {
-  $oid: string;
-}
+// export interface UserRoot {
+//   status: boolean;
+//   user: User;
+//   msg: string;
+// }

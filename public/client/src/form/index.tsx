@@ -1,10 +1,11 @@
 import React, { ReactNode, useEffect, useMemo } from "react";
 import { FormikProps, useFormik } from "formik";
-import { CustomInputProps, RequestStatus } from "../../interfaces";
+
 import Grid, { GridProps } from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import { FormInput } from "./FormInput";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { CustomInputProps, RequestStatus } from "../interfaces";
 
 interface InputValidation {
   required?: boolean;
@@ -145,8 +146,6 @@ export const CustomForm: React.FC<props> = (props) => {
     onSubmit: async (data: any) => {
       onSubmit(data, formik);
       if (resetFrom) {
-        console.log("");
-
         formik.resetForm();
       }
     },

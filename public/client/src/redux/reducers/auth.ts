@@ -1,30 +1,41 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
 import { AppThunk } from "../store";
 import {
+  ApiResponse,
   LoginReq,
+  LogOutReq,
   RegisterReq,
   RequestStatus,
   User,
-  UserRoot,
 } from "../../interfaces";
-import { loginRoutes, regiserRoutes } from "../../utils/APIRoutes";
+import {
+  loginRoutes,
+  logOutRoutes,
+  regiserRoutes,
+} from "../../utils/routes/APIRoutes";
+import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 import { NavigateFunction } from "react-router-dom";
-import { ROUTES } from "../../utils/routes/constants";
-// import { API } from "@/utility/api/constants";
+import { ROUTES } from "../../utils/routes/contants";
 
 interface InitialState {
   status: RequestStatus;
-  authenticated: Boolean;
-  user: User[];
+  user: User;
+  isAuth: boolean;
 }
 
 const initialState: InitialState = {
   status: "nothing",
-  authenticated: false,
-  user: [],
+  user: { _id: "", username: "", email: "", isOnline: false },
+  isAuth: sessionStorage.getItem("chat-app-user") ? true : false,
 };
+
+const storedUser = sessionStorage.getItem("chat-app-user");
+
+if (storedUser) {
+  initialState.user = JSON.parse(storedUser);
+  initialState.status = "data";
+}
 
 const AuthSlice = createSlice({
   name: "Auth",
@@ -33,33 +44,39 @@ const AuthSlice = createSlice({
     setStatus: (state, { payload }: PayloadAction<RequestStatus>) => {
       state.status = payload;
     },
-    setAuthentication: (state, { payload }: PayloadAction<Boolean>) => {
-      state.authenticated = payload;
-    },
-    setUser: (state, { payload }: PayloadAction<User[]>) => {
+    setUser: (state, { payload }: PayloadAction<User>) => {
       state.user = payload;
+    },
+    ResetsUser: (state, { payload }: PayloadAction<User>) => {
+      state.user = payload;
+      state.status = "nothing";
+    },
+    setIsAuth: (state, { payload }: PayloadAction<boolean>) => {
+      state.isAuth = payload;
     },
   },
 });
 
-export const { setStatus, setAuthentication, setUser } = AuthSlice.actions;
+export const { setStatus, setUser, setIsAuth, ResetsUser } = AuthSlice.actions;
 
-export const LoginAsync =
-  (req: LoginReq, navigate: NavigateFunction): AppThunk =>
+export const RegisterAsync =
+  (req: RegisterReq, navigate: NavigateFunction): AppThunk =>
   async (dispatch) => {
     dispatch(setStatus("loading"));
-    const { AUTH } = ROUTES;
+
+    const { ROOT } = ROUTES;
     try {
-      const { data } = await axios.post<UserRoot>(loginRoutes, req);
+      const { data } = await axios.post<ApiResponse>(regiserRoutes, req);
 
       if (data.status) {
         dispatch(setStatus("data"));
-        localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        dispatch(setAuthentication(data.status));
-        navigate(AUTH.CHAT_GROUP);
+        enqueueSnackbar(data.msg, {
+          variant: "success",
+        });
+        navigate(ROOT);
       }
       if (!data.status) {
-        dispatch(setAuthentication(data.status));
+        console.log("false");
 
         enqueueSnackbar(data.msg, {
           variant: "error",
@@ -70,22 +87,51 @@ export const LoginAsync =
     }
   };
 
-export const RegisterAsync =
-  (req: RegisterReq, navigate: NavigateFunction): AppThunk =>
+export const LoginAsync =
+  (req: LoginReq, navigate: NavigateFunction): AppThunk =>
   async (dispatch) => {
     dispatch(setStatus("loading"));
-
-    const { ROOT } = ROUTES;
+    const { AUTH, ROOT } = ROUTES;
     try {
-      const { data } = await axios.post(regiserRoutes, req);
+      const { data } = await axios.post<ApiResponse>(loginRoutes, req);
+      console.log(data);
+
       if (data.status) {
         dispatch(setStatus("data"));
+        dispatch(setUser(data.user));
+        dispatch(setIsAuth(data.user.isOnline));
+        sessionStorage.setItem("chat-app-user", JSON.stringify(data.user));
+        navigate(AUTH.HOME);
+      }
+      if (!data.status) {
+        navigate(ROOT);
         enqueueSnackbar(data.msg, {
-          variant: "success",
+          variant: "error",
         });
+      }
+    } catch (error: any) {
+      dispatch(setStatus("error"));
+    }
+  };
+
+export const LogOutAsync =
+  (req: LogOutReq, navigate: NavigateFunction): AppThunk =>
+  async (dispatch) => {
+    dispatch(setStatus("loading"));
+    const { ROOT } = ROUTES;
+    try {
+      const { data } = await axios.post<ApiResponse>(logOutRoutes, req);
+      console.log(data);
+
+      if (data.status) {
+        dispatch(setStatus("data"));
+        dispatch(setUser(data.user));
+        dispatch(setIsAuth(data.user.isOnline));
+        sessionStorage.removeItem("chat-app-user");
         navigate(ROOT);
       }
       if (!data.status) {
+        navigate(ROOT);
         enqueueSnackbar(data.msg, {
           variant: "error",
         });

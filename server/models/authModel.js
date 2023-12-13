@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
+const authSchema = new mongoose.Schema({
   username: {
     type: String,
     require: false,
@@ -14,19 +14,15 @@ const userSchema = new mongoose.Schema({
     max: 50,
     unique: true,
   },
-  userPassword: {
+  password: {
     type: String,
     require: true,
     min: 8,
   },
-  isAvatarImageSet: {
+  isOnline: {
     type: Boolean,
     default: false,
   },
-  avatarImage: {
-    type: String,
-    default: "",
-  },
 });
 
-module.exports = mongoose.model("Users", userSchema);
+module.exports = mongoose.model("Users", authSchema);

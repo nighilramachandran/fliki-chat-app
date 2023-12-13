@@ -6,5 +6,6 @@ export const ROUTES = {
   AUTH: {
     CHAT_GROUP: "/chat-group",
     CREATE_GROUP: "/create-group",
+    HOME: "/home",
   },
 };

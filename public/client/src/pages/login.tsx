@@ -2,25 +2,18 @@ import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material";
 import { CustomForm, CustomInputFormProps } from "../form";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../utils/routes/contants";
-import { RegisterAsync } from "../redux/reducers/auth";
+import { LoginReq } from "../interfaces";
 import { useAppDispatch } from "../redux/hooks";
-import { RegisterReq } from "../interfaces";
+import { LoginAsync } from "../redux/reducers/auth";
 
 const inputs: CustomInputFormProps[] = [
-  {
-    type: "text",
-    name: "username",
-    label: "User Name",
-    placeholder: "User Name",
-    validate: { required: true },
-    colProps: { xs: 12 },
-  },
   {
     type: "email",
     name: "email",
     label: "Email",
     placeholder: "Email",
     validate: { required: true },
+    autoComplete: "false",
     colProps: { xs: 12 },
   },
   {
@@ -31,19 +24,11 @@ const inputs: CustomInputFormProps[] = [
     validate: { required: true },
     colProps: { xs: 12 },
   },
-  {
-    type: "password",
-    name: "newPassword",
-    label: "Confirm Password",
-    placeholder: "Please reenter your password",
-    validate: { required: true, same: "password" },
-    colProps: { xs: 12 },
-  },
 ];
 
-const { ROOT } = ROUTES;
+const { GUEST } = ROUTES;
 
-const Register = () => {
+const Login = () => {
   //navigate
   const navigate = useNavigate();
 
@@ -51,26 +36,25 @@ const Register = () => {
   const dispatch = useAppDispatch();
 
   //functions
-  const handleRegister = (vals: RegisterReq) => {
-    dispatch(RegisterAsync(vals, navigate));
+  const handleSignUp = () => {
+    navigate(GUEST.REGISTER);
   };
 
-  const handleSignIn = () => {
-    navigate(ROOT);
+  const handleSignIn = (vals: LoginReq) => {
+    dispatch(LoginAsync(vals, navigate));
   };
 
   return (
     <Box sx={{ height: "inherit", display: "flex", justifyContent: "center" }}>
       <Grid container alignItems={"center"} justifyContent={"center"}>
-        <Grid item xs={12} md={5}>
+        <Grid item xs={5}>
           <Paper sx={{ padding: "40px" }}>
             <Stack spacing={2}>
               <CustomForm
                 formName="form"
                 inputs={inputs}
-                onSubmit={handleRegister}
-                submitLable={"Register"}
-                resetFrom={true}
+                onSubmit={handleSignIn}
+                submitLable={"login"}
               ></CustomForm>
               <Stack
                 direction={"row"}
@@ -78,8 +62,8 @@ const Register = () => {
                 justifyContent={"center"}
                 spacing={1}
               >
-                <Typography>Already an User ?</Typography>
-                <Button onClick={() => handleSignIn()}>SignIn</Button>
+                <Typography>Dont have an account ?</Typography>
+                <Button onClick={() => handleSignUp()}>Register</Button>
               </Stack>
             </Stack>
           </Paper>
@@ -89,4 +73,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

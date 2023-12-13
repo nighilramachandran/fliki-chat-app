@@ -1,25 +1,34 @@
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Layout } from "./widgets/layout/layout";
-import SignIn from "./pages/SignIn";
-import Register from "./pages/Register";
-import ChatGroup from "./pages/ChatGroup";
-import { ROUTES } from "./utils/routes/constants";
-import CreateGroup from "./pages/CreateGroup";
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+} from "react-router-dom";
+import Layouts from "./widgets/layouts/layouts";
+import Register from "./pages/register";
+import { ROUTES } from "./utils/routes/contants";
+import Login from "./pages/login";
+import { useAppSelector } from "./redux/hooks";
+import Home from "./pages/home";
 
-const { AUTH, ROOT, GUEST } = ROUTES;
+const { GUEST, AUTH } = ROUTES;
 
-export const PrivateRoutes: React.FC = () => {
+const PrivateRoutes = () => {
+  const { isAuth } = useAppSelector((state) => state.Auth);
   return (
     <BrowserRouter>
       <Routes>
-        <Route path={ROOT} element={<Layout />}>
-          <Route index element={<SignIn />}></Route>
-          <Route path={GUEST.REGISTER} element={<Register />}></Route>
-          <Route path={AUTH.CHAT_GROUP} element={<ChatGroup />}></Route>
-          <Route path={AUTH.CREATE_GROUP} element={<CreateGroup />}></Route>
+        <Route path={"/"} element={<Layouts />}>
+          <Route index element={<Login />} />
+          <Route path={GUEST.REGISTER} element={<Register />} />
+          <Route element={!isAuth ? <Navigate to="/" replace /> : <Outlet />}>
+            <Route path={AUTH.HOME} element={<Home />}></Route>
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
   );
 };
+
+export default PrivateRoutes;
