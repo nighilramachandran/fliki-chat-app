@@ -49,13 +49,13 @@ const ChatPage = () => {
     userId: user._id,
   });
 
-  const [displayMessage, setDisplayMessage] = useState<MessageDataProps[]>([]);
+  const [trigger, setTrigger] = useState<boolean>(false);
 
   useEffect(() => {
     // Listen for new messages
     socket.on("new-message", (msgData) => {
       console.log("message", msgData);
-      setDisplayMessage((prevMessages) => [...prevMessages, msgData]);
+      setTrigger((prev) => !prev);
     });
   }, []);
 
@@ -80,7 +80,7 @@ const ChatPage = () => {
   //effects
   useEffect(() => {
     dispatch(GetGroupByIdAsync({ groupId: groupId as string }));
-  }, [dispatch, groupId]);
+  }, [dispatch, groupId, trigger]);
 
   const messagesRef = useRef<HTMLDivElement>(null);
 
@@ -107,7 +107,6 @@ const ChatPage = () => {
         <Grid item xs={9}>
           <Chat
             handleSendMessageProps={(vals) => handleSendMessage(vals)}
-            messageProps={displayMessage}
             userProps={user}
             groupProps={groups}
             messagesProps={messages}
@@ -142,7 +141,6 @@ const SideBarUsers = ({ membersProps }: SideBarUsersProps) => {
 
 interface ChatProps {
   handleSendMessageProps: (vals: SendMessageReq) => void;
-  messageProps: MessageDataProps[];
   userProps: User;
   groupProps: Group[];
   messagesProps: Message[];
@@ -151,7 +149,6 @@ interface ChatProps {
 
 const Chat = ({
   handleSendMessageProps,
-  messageProps,
   userProps,
   groupProps,
   messagesProps,
