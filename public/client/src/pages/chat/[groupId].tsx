@@ -1,4 +1,4 @@
-import { Box, Grid, Paper, Stack, Typography } from "@mui/material";
+import { Avatar, Box, Grid, Paper, Stack, Typography } from "@mui/material";
 import { CustomForm, CustomInputFormProps } from "../../form";
 import socketIO from "socket.io-client";
 import {
@@ -50,6 +50,11 @@ const ChatPage = () => {
   });
 
   const [trigger, setTrigger] = useState<boolean>(false);
+
+  //   socket.on("user-joined", (data) => {
+  //     console.log("data", data);
+  //     setTrigger((prev) => !prev);
+  //   });
 
   useEffect(() => {
     // Listen for new messages
