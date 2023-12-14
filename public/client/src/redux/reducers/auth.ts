@@ -94,7 +94,6 @@ export const LoginAsync =
     const { AUTH, ROOT } = ROUTES;
     try {
       const { data } = await axios.post<ApiResponse>(loginRoutes, req);
-      console.log(data);
 
       if (data.status) {
         dispatch(setStatus("data"));

@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const authRoute = require("./routes/authRoute");
+const groupRoute = require("./routes/groupRoute");
 const initSocket = require("./ws/index");
 
 const app = express();
@@ -11,7 +12,11 @@ const http = require("http").createServer(app);
 app.use(cors());
 app.use(express.json());
 
+//auth
 app.use("/api/auth", authRoute);
+
+//group
+app.use("/api/group", groupRoute);
 
 mongoose
   .connect(process.env.MONGO_URL, {

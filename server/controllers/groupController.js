@@ -1,4 +1,4 @@
-const Group = require("../model/groupModel");
+const Group = require("../models/groupModel");
 
 //function to create group
 
@@ -24,16 +24,28 @@ module.exports.creategroup = async (req, res, next) => {
 };
 
 // Function to get all groups
-// module.exports.getAllGroups = async (req, res, next) => {
-//   try {
-//     const groups = await Group.find();
+module.exports.getAllGroups = async (req, res, next) => {
+  try {
+    const groups = await Group.find();
 
-//     if (!groups || groups.length === 0) {
-//       return res.json({ msg: "No Groups Found", status: false });
-//     }
+    if (!groups || groups.length === 0) {
+      return res.json({ msg: "No Groups Found", status: false });
+    }
 
-//     return res.json({ status: true, groups });
-//   } catch (ex) {
-//     next(ex);
-//   }
-// };
+    return res.json({ status: true, groups });
+  } catch (ex) {
+    next(ex);
+  }
+};
+module.exports.getGroupById = async (req, res, next) => {
+  try {
+    const { groupId } = req.body;
+    const groups = await Group.findById(groupId);
+    if (!groups || groups.length === 0) {
+      return res.json({ msg: "No Groups Found", status: false });
+    }
+    return res.json({ status: true, groups });
+  } catch (ex) {
+    next(ex);
+  }
+};

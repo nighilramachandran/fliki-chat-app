@@ -17,8 +17,12 @@ export interface User {
   isOnline: boolean;
 }
 
-// export interface UserRoot {
-//   status: boolean;
-//   user: User;
-//   msg: string;
-// }
+export interface CreateGroupReq {
+  groupname: string;
+}
+export interface GetGroupByIdReq {
+  groupId: string;
+}
+export interface SendMessageReq {
+  message: string;
+}
