@@ -201,22 +201,33 @@ const Chat = ({
           {messagesProps?.length > 0 &&
             messagesProps?.map((message, ind) => {
               return (
-                <Box
-                  key={ind}
-                  sx={{
-                    background: "#43685d",
-                    width: "fit-content",
-                    height: "100%",
-                    padding: "10px",
-                    borderRadius: "5px",
-                    marginLeft:
-                      userProps._id === message.sender.userId
-                        ? "auto!important"
-                        : 0,
-                  }}
-                >
-                  <Typography>{message.sender.content}</Typography>
-                </Box>
+                <Stack direction={"row"} spacing={2}>
+                  <Box
+                    key={ind}
+                    sx={{
+                      background: "#43685d",
+                      width: "fit-content",
+                      height: "100%",
+                      padding: "10px",
+                      borderRadius: "5px",
+                      marginLeft:
+                        userProps._id === message.sender.userId
+                          ? "auto!important"
+                          : 0,
+                    }}
+                  >
+                    <Typography>{message.sender.content}</Typography>
+                  </Box>
+                  <Avatar
+                    sx={{
+                      background: "transparent",
+                      border: "1px solid #fc9915",
+                      color: "#fc9915",
+                    }}
+                  >
+                    {message.sender.name.charAt(0).toUpperCase()}
+                  </Avatar>
+                </Stack>
               );
             })}
         </Stack>
