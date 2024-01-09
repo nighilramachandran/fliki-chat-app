@@ -6,12 +6,12 @@ import {
   Routes,
 } from "react-router-dom";
 import Layouts from "./widgets/layouts/layouts";
-import Register from "./pages/register";
 import { ROUTES } from "./utils/routes/contants";
 import Login from "./pages/login";
 import { useAppSelector } from "./redux/hooks";
 import Home from "./pages/home";
 import ChatPage from "./pages/chat/[groupId]";
+import Register from "./pages/Register";
 
 const { GUEST, AUTH, ROOT } = ROUTES;
 
